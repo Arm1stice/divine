@@ -1,0 +1,100 @@
+<!--
+  Divine - A Personal Dota 2 Stats Aggregator
+  views/loginExplanation.html
+
+  created by Wyatt Calandro
+  Copyright (c) 2015 Wyatt Calandro
+-->
+<!doctype html>
+<html>
+  <head>
+    <link href='../resources/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='../resources/css/font-awesome.min.css' rel='stylesheet'>
+    <style>
+      html, body{
+        color: white;
+        -webkit-user-select: none;
+      }
+      header{
+        background: #091117;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        height: 28px;
+        cursor: pointer;
+        -webkit-app-region: drag;
+      }
+      .submit-btn{
+        background-color: #091117;
+        color: white;
+        width: 200px;
+        height: 50px;
+        border: none;
+        text-align: center;
+        font-size: 20px;
+      }
+      .submit-btn:hover{
+        color: #a8a8a8;
+      }
+      .text-box{
+        background-color: #091117;
+        text-align: center;
+        color: white;
+        height: 30px;
+        margin-bottom: 10px;
+        border: #091117 solid;
+        -webkit-input-placeholder: #939393;
+      }
+      .glyphicon:hover{
+        opacity: 0.4;
+      }
+      .hoverlink{
+        font-family: Arial;
+        color: white;
+        font-size: 10px;
+        text-decoration: underline;
+      }
+      .hoverlink:hover{
+        text-decoration: none;
+        color: orange;
+      }
+      footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 1rem;
+        text-align: center;
+      }
+      .window-title{
+        float: left;
+        font-size: 20px;
+        padding-left: 10px;
+        clear: both;
+      }
+    </style>
+  </head>
+  <header>
+    <span class='window-title'>Login Explanation</span>
+    <span class="glyphicon glyphicon-remove" alt='Close' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='window.close();' aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-minus" alt='Minimize' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='require("remote").getCurrentWindow().minimize();' aria-hidden="true"></span><br>
+  </header>
+  <body style='background: #142533;'>
+    <h2 align='center'>Why do you need my Steam login credentials?</h2>
+    <p style='padding: 15px;'>
+      Divine aims to provide detailed statistics on your match history, and obtains information on matches in multiple ways.
+      First, it attempts to find new matches using the Steam Web API (using the API key you provided), then if it finds a new
+      match, then it will grab match information from the Web API, and grab MMR data by logging into the game and grabbing current
+      data. <b>NO</b> information is shared with any outside server, and the program does not store your password.
+    </p>
+    <script src='../resources/js/jquery-2.1.4.min.js' type='text/javascript'></script>
+    <script>
+      try {
+          $ = jQuery = module.exports;
+          // If you want module.exports to be empty, uncomment:
+          // module.exports = {};
+        } catch(e) {}
+    </script>
+    <script src='../resources/js/bootstrap.min.js' type='text/javascript'></script>
+  </body>
+</html>
