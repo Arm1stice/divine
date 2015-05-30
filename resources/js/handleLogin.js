@@ -17,6 +17,24 @@ var gif = $("#logingif");
 var ipc = require('ipc');
 var remote = require('remote');
 
+$.fn.pressEnter = function(fn) {
+
+    return this.each(function() {
+        $(this).bind('enterPress', fn);
+        $(this).keyup(function(e){
+            if(e.keyCode == 13)
+            {
+              $(this).trigger("enterPress");
+            }
+        })
+    });
+ };
+uBox.pressEnter(function(){
+  login.click();
+});
+passBox.pressEnter(function(){
+  login.click();
+})
 $('body').on('click', '.btn', function(e){
     e.stopImmediatePropagation();
     $(this).removeClass('active');

@@ -1,0 +1,187 @@
+<!--
+  Divine - A Personal Dota 2 Stats Aggregator
+  views/devKey.html
+
+  created by Wyatt Calandro
+  Copyright (c) 2015 Wyatt Calandro
+-->
+<!doctype html>
+<html>
+  <head>
+    <link href='../resources/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='../resources/css/font-awesome.min.css' rel='stylesheet'>
+    <title>Steam DevKey</title>
+    <style>
+      html, body{
+        color: white;
+        -webkit-user-select: none;
+      }
+      header{
+        background: #091117;
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        height: 28px;
+        cursor: pointer;
+        -webkit-app-region: drag;
+      }
+      .submit-btn{
+        background-color: #091117;
+        color: white;
+        width: 175px;
+        height: 40px;
+        border: none;
+        text-align: center;
+        font-size: 12px;
+      }
+      .cancel-btn{
+        background-color: #FF2241;
+        color: white;
+        width: 175px;
+        height: 40px;
+        border: none;
+        text-align: center;
+        font-size: 12px;
+      }
+      .submit-btn:hover{
+        color: #a8a8a8;
+      }
+      .cancel-btn:hover{
+        color: #a8a8a8;
+      }
+      .text-box{
+        background-color: #091117;
+        text-align: left;
+        color: white;
+        height: 30px;
+        border: #091117 solid;
+        -webkit-input-placeholder: #939393;
+      }
+      .glyphicon:hover{
+        opacity: 0.4;
+      }
+      .errortext{
+        height: 15px;
+        width: 100%;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #FF2241;
+        font-family: Arial;
+        font-size: 14px;
+      }
+      .hoverlink{
+        font-family: Arial;
+        color: white;
+        text-decoration: underline;
+      }
+      .hoverlink:hover{
+        text-decoration: none;
+        color: orange;
+      }
+      footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 1rem;
+        text-align: center;
+      }
+      .window-title{
+        float: left;
+        font-size: 20px;
+        padding-left: 10px;
+        clear: both;
+      }
+    </style>
+  </head>
+  <header>
+    <span class='window-title'>Personal Settings Password</span>
+    <span class="glyphicon glyphicon-remove" alt='Close' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='window.close();' aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-minus" alt='Minimize' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='require("remote").getCurrentWindow().minimize();' aria-hidden="true"></span><br>
+  </header>
+  <body style='background: #142533'>
+    <center>
+      <br>
+      <p style='color: white; font-family: Arial; font-size: 14px; text-align: left; padding: 10px;'>
+        Depending on which features of Divine you use (Twitch/Twitter integraton, etc.), some personal and important settings may get stored on the computer.
+        You may choose to encrypt the file that would contain this information with a password if you wish (You would need
+        to enter this password every time Divine starts). Please know that if you choose not to encrypt with a password,
+        the information will be stored in plain text, and anyone who has access to your computer (or more specifically, your personal settings file) would
+        be able to read your personal settings. You can change this option later.
+      </p>
+      <div id='loginform' style='padding-top: 15px;'>
+        <input type='password' style='width: 400px;' class='text-box' id='pass' placeholder='Password'><br><br>
+        <input type='password' style='width: 400px;' class='text-box' id='passconfirm' placeholder='Confirm Password'>
+      </div>
+      <div class='errortext' id='errortext'></div>
+      <span style='float: left;margin-left: 50px;'>
+        <button class='submit-btn' id='cancel'>Don't Use A Password</button>
+      </span>
+      <span style='float: right; margin-right: 50px;'>
+        <button class='submit-btn' id='login'>Use Password</button>
+      </span>
+    </center>
+    <!--<script src='../resources/js/jquery-2.1.4.min.js' type='text/javascript'></script>-->
+    <script>
+        window.$ = window.jQuery = require('../resources/js/jquery-2.1.4.min.js');
+        console.log($);
+          // If you want module.exports to be empty, uncomment:
+          // module.exports = {};
+    </script>
+    <!--<script src='../resources/js/bootstrap.min.js' type='text/javascript'></script>
+    <script src='../resources/js/encryptSettings.js' type='text/javascript'></script>-->
+    <script>
+      $.fn.pressEnter = function(fn) {
+        return this.each(function() {
+            $(this).bind('enterPress', fn);
+            $(this).keyup(function(e){
+                if(e.keyCode == 13)
+                {
+                  $(this).trigger("enterPress");
+                }
+            })
+        });
+      };
+      $("#pass").pressEnter(function(){
+        $("#login").click();
+      });
+      $("#passconfirm").pressEnter(function(){
+        $("#login").click();
+      });
+      $("#pass").keyup(function(){
+        if($("#pass").val() !== $("#passconfirm").val()){
+          $("#errortext").text("Passwords must match!");
+        }else{
+          $("#errortext").empty();
+      }
+      });
+      $("#passconfirm").keyup(function(){
+        if($("#pass").val() !== $("#passconfirm").val()){
+          $("#errortext").text("Passwords must match!");
+        }else{
+          $("#errortext").empty();
+        }
+      });
+      $("#cancel").click(function(){
+        require('ipc').send("dontEncryptFile", null);
+      });
+      $("#login").click(function(){
+        if(($("#pass").val() == $("#passconfirm").val()) && ($("#pass").val() !== "")){
+          console.log("SENT!");
+          require('ipc').send('encryptFileWithPass', $("#pass").val());
+        }
+      });
+    </script>
+    <!--<script>
+      document.getElementById('cancel').onclick = function(){
+        require('ipc').send("dontEncryptFile", null);
+      };
+      document.getElementById('submit').onclick = function(){
+        if((document.getElementById('pass').value !== document.getElementById('passconfirm').value) && (document.getElementById('pass').value !== "")){
+          require('ipc').send('encryptFileWithPass', document.getElementById('pass').value);
+        }
+      };
+    </script>-->
+  </body>
+</html>

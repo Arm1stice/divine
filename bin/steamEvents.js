@@ -12,6 +12,7 @@ var SteamEvents = function(){
 
 SteamEvents.prototype.registerEvents = function(){
   global.steamcli.on('loggedOn', function(){
+    global.username = global.steamcli.steamID;
     global.loginWindow.webContents.send('loggedOn', {
       error: false,
       message: null
@@ -26,6 +27,7 @@ SteamEvents.prototype.registerEvents = function(){
   });
   global.steamcli.on('error', function(e){
     if(e.cause === 'logonFail'){
+      global.username = null;
       var reason;
       switch(e.eresult.toString()){
         case "5":{

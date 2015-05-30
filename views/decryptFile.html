@@ -74,48 +74,55 @@
     </style>
   </head>
   <header>
-    <span class='window-title'>Steam DevKey</span>
+    <span class='window-title'>Personal Settings Password</span>
     <span class="glyphicon glyphicon-remove" alt='Close' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='window.close();' aria-hidden="true"></span>
     <span class="glyphicon glyphicon-minus" alt='Minimize' style='float: right; padding-right: 12px; padding-top: 6px; cursor: pointer; -webkit-app-region: no-drag;' onclick='require("remote").getCurrentWindow().minimize();' aria-hidden="true"></span><br>
   </header>
   <body style='background: #142533'>
     <center>
       <br>
-      <p style='color: white; font-family: Arial; font-size: 16;'>We need an Steam API key,
-        which must be supplied by you, to get match information. If you need an key, you can get one
-        from <a href='#' onclick='require("remote").require("shell").openExternal("http://steamcommunity.com/dev/apikey");' class='hoverlink'>here</a>.
-      </p>
+      <p style='color: white; font-family: Arial; font-size: 16;'>Please enter the password for your Personal Settings.</p>
       <div id='loginform' style='padding-top: 15px;'>
-        <input type='text' style='width: 400px;' class='text-box' id='username' placeholder='Steam DevKey'>
-        <button class='submit-btn' id='login'>Set DevKey</button>
+        <input type='password' style='width: 400px;' class='text-box' id='pass' placeholder='Password'>
+        <button class='submit-btn' id='login'>Submit</button>
       </div>
     </center>
-    <script src='../resources/js/jquery-2.1.4.min.js' type='text/javascript'></script>
+    <!--<script src='../resources/js/jquery-2.1.4.min.js' type='text/javascript'></script>-->
     <script>
-        window.$ = window.jQuery = module.exports;
-        console.log($);
-        // If you want module.exports to be empty, uncomment:
-        // module.exports = {};
-        $.fn.pressEnter = function(fn) {
-          return this.each(function() {
-              $(this).bind('enterPress', fn);
-              $(this).keyup(function(e){
-                  if(e.keyCode == 13)
-                  {
-                    $(this).trigger("enterPress");
-                  }
-              })
-          });
-        };
-        $("#username").pressEnter(function(){
-          $("#login").click();
-        });
-        $("#login").click(function(){
-          if($("#username").val() !== ""){
-            require("ipc").send('devKey', $("#username").val());
-          }
-        });
+          window.$ = window.jQuery = require('../resources/js/jquery-2.1.4.min.js');
+          console.log($);
+          // If you want module.exports to be empty, uncomment:
+          // module.exports = {};
     </script>
-    <script src='../resources/js/bootstrap.min.js' type='text/javascript'></script>
+    <script>
+          $.fn.pressEnter = function(fn) {
+            return this.each(function() {
+                $(this).bind('enterPress', fn);
+                $(this).keyup(function(e){
+                    if(e.keyCode == 13)
+                    {
+                      $(this).trigger("enterPress");
+                    }
+                })
+            });
+          };
+          $("#pass").pressEnter(function(){
+            $("#login").click();
+          })
+          $("#login").click(function(){
+            if($("#pass").val() !== ''){
+              require('ipc').send('decryptPassword', $("#pass").val());
+            }
+          });
+          require('ipc').on('decryptPasswordError', function(){
+            $("#pass").val('');
+            require('remote').require('dialog').showMessageBox(require('remote').getCurrentWindow(), {
+              type: "warning",
+              buttons: ["OK"],
+              message: "The password you entered was incorrect",
+              title: "Error"
+            });
+          });
+    </script>
   </body>
 </html>

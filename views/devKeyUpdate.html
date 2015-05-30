@@ -1,6 +1,6 @@
 <!--
   Divine - A Personal Dota 2 Stats Aggregator
-  views/devKey.html
+  views/devKeyUpdate.html
 
   created by Wyatt Calandro
   Copyright (c) 2015 Wyatt Calandro
@@ -112,7 +112,7 @@
         });
         $("#login").click(function(){
           if($("#username").val() !== ""){
-            require("ipc").send('devKey', $("#username").val());
+            require("ipc").send('devKeyUpdate', $("#username").val());
           }
         });
     </script>
