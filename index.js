@@ -60,7 +60,6 @@ var basePSettings = {
 // Check to see if
 setInterval(function(){
   var windows = browserWin.getAllWindows();
-  console.log("Number of window open: " + windows.length);
   if(windows.length === 0){
     if(global.isOpeningAnotherWindow === false){
       app.quit();
@@ -126,6 +125,17 @@ app.on('ready', function(){
             });
           }
         }
+      ]
+    },
+    {
+      label: "View",
+      submenu: [
+          {
+            label: "Show DevTools",
+            click: function(){
+              global.mainWindow.openDevTools({detach: true});
+            }
+          }
       ]
     }
   ];
@@ -271,7 +281,7 @@ global.ipc.on('loginSuccessResponseOk', function(){
             });
             global.encryptionWindow.loadUrl("file://" + __dirname + "/views/decryptFile.html");
           }else{
-            fs.readFile("settings/" + global.username + "/psettings.json", function(err, file){
+            fs.readFile("settings/" + global.username + "/psettings", function(err, file){
               if(err){
                 console.error("Error reading personal settings file!");
                 throw err;
@@ -343,7 +353,9 @@ function continueOn2(){
     height: size.height,
     title: "Divine",
     resizable: true,
-    frame: true
+    frame: true,
+    "min-height": 768,
+    "min-width": 1024
   });
   global.mainWindow.loadUrl("file://" + __dirname + "/views/matchesView.html");
   global.mainWindow.maximize();
@@ -369,8 +381,9 @@ global.ipc.on('matchPageLoaded', function(){
             message: err
           }, function(response){});
         }else{
+          var name = (info.response.players[0].personaname.length > 15) ? info.response.players[0].personaname.substring(0, 13) + "..." : info.response.players[0].personaname;
           global.mainWindow.webContents.executeJavaScript(("$('#profilepic').attr('src', '" + info.response.players[0].avatarmedium + "');"));
-          global.mainWindow.webContents.executeJavaScript(("$('#profilename').text('" + info.response.players[0].personaname + "');"));
+          global.mainWindow.webContents.executeJavaScript(("$('#profilename').text('" + escape(name) + "');"));
         }
       });
     }
