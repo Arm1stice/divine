@@ -4,48 +4,40 @@
 
   created by Wyatt Calandro
   Copyright (c) 2015 Wyatt Calandro
+
 */
+
 body, html{
   background-color: #142533;
   overflow: hidden;
 }
-.matchlist{
-  position: fixed;
-  min-width: 300px;
-  width: 20vw;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  height :100vh;
-  overflow: none;
-  display: inline-block;
+
+/* Container for everything */
+.holder{
+  padding: 0;
 }
-.matches{
-  position: fixed;
-  overflow-y: auto;
-  overflow-x: none;
+
+/* Match list and profile info */
+.sidebar{
+  background: #091117;
+  width: 250px;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  position: absolute;
+}
+
+/* Match info */
+.info{
+  width: calc(100% - 250px);
+  height: 100vh;
   color: white;
   font-family: Arial;
-  background: #142533;
-}
-.matchinfo{
-  position: fixed;
-  overflow-x: none;
+  padding: 20px;
+  left: 250px;
   overflow-y: auto;
-  min-width: 468px;
-  width: 80vw;
-  height: 100vh;
-  top: 0;
-  bottom: 0;
+  overflow-x: none;
   display: inline-block;
-  background: #142533;
-}
-container{
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  bottom:0;
-  left: 0;
-  right: 0;
+  position: relative;
 }

@@ -8,30 +8,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Divine</title>
     <link href='../resources/css/bootstrap.min.css' rel='stylesheet'>
     <link href='../resources/css/matchesView.css' rel='stylesheet'>
   </head>
   <body>
-    <div class='container-fluid container'>
-      <div class='matchlist'>
-            <div class='profileinfo' style='width: 100%; height: 100px; background: #091117;'>
-              <img id='profilepic' width='64' height='64' src='' style='float: left; margin-top: 20px; margin-left: 15px;'>
-              <span id='profilename' style='color: white; font-family: Arial; font-size: 24px; margin-left: 15px; top: 37px;'></span>
-            </div>
-            <div class='matches'>
-
-            </div>
+    <div class='container-fluid holder'>
+      <div class='sidebar'>
+        <div class='profileinfo' style='width: 100%; height: 100px; background: #091117; border-bottom: solid black 3px;'>
+            <img id='profilepic' width='64' height='64' src='' style='float: left;  margin-top: 17px; margin-left: 4px;'>
+            <!-- MAX NAME SIZE: 16 CHAR. -->
+            <span id='profilename' style='color: white; font-family: Arial; font-size: 24px; float: right; margin-right: 15px; margin-top: 33px;'></span>
+        </div>
       </div>
-      <div class='matchinfo'>
-        <center><div style='padding-top: 40vh; text-align: center; font-family: Arial; color: white; font-size: 40px;'>Click on a match to show detailed stats.</div></center>
+      <div class='info'>
       </div>
     </div>
     <script>
       window.$ = window.jQuery = require('../resources/js/jquery-2.1.4.min.js');
       console.log($);
-      // If you want module.exports to be empty, uncomment:
-      // module.exports = {};
 
       $.fn.pressEnter = function(fn) {
         return this.each(function() {
@@ -46,7 +42,7 @@
       };
       $(document).ready(function(){
         require('ipc').send('matchPageLoaded', null);
-      })
+      });
     </script>
   </body>
 </html>
