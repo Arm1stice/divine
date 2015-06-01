@@ -381,7 +381,7 @@ global.ipc.on('matchPageLoaded', function(){
             message: err
           }, function(response){});
         }else{
-          var name = (info.response.players[0].personaname.length > 15) ? info.response.players[0].personaname.substring(0, 13) + "..." : info.response.players[0].personaname;
+          var name = (info.response.players[0].personaname.length > 16) ? info.response.players[0].personaname.substring(0, 13) + "..." : info.response.players[0].personaname;
           global.mainWindow.webContents.executeJavaScript(("$('#profilepic').attr('src', '" + info.response.players[0].avatarmedium + "');"));
           global.mainWindow.webContents.executeJavaScript(("$('#profilename').text('" + escape(name) + "');"));
         }
