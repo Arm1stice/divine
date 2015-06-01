@@ -141,6 +141,12 @@ app.on('ready', function(){
   ];
   var matchWindowMenu = menu.buildFromTemplate(menuTemplate);
   menu.setApplicationMenu(matchWindowMenu);
+  require('power-monitor').on('suspend', function() {
+    if(global.steamcli.loggedOn === true){
+      global.steamcli.logOff();
+    }
+    app.quit();
+  });
   global.loginWindow = new browserWin({
     width: 450,
     height: 500,
