@@ -360,10 +360,6 @@ function continueOn2() {
 	});
 
 	// Received confirmation of the main page loading
-	global.ipc.on('matchPageLoaded', function(event, data){
-		global.mainWindow.setContentSize(data.width, data.height);
-		global.mainWindow.maximize();
-	});
 	global.mainWindow.webContents.on('did-finish-load', function() {
 		var listIndex = 0;
 		console.log("WE GOT A CALL SAYING THE PAGE FINISHED!");
