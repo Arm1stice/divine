@@ -11,11 +11,19 @@
   "devDependencies": {
     "electron-rebuild": "^0.1.4"
   },
+  "config": {
+    "atom-shell": {
+      "version": "0.26.0",
+      "arch": "ia32"
+    }
+  },
   "dependencies": {
+    "async": "^1.2.1",
     "escape-html": "^1.0.1",
+    "handlebars": "^3.0.3",
     "is-there": "^2.0.0",
-    "jquery": "^2.1.4",
     "request": "^2.56.0",
+    "sqlite3": "^3.0.8",
     "steam": "^0.6.8"
   }
 }

@@ -115,7 +115,7 @@ Dota2Client.prototype.exit = function() {
       this._gcClientHelloIntervalId = null;
   }
   this._gcReady = false;
-  
+
   if(this._client.loggedOn) this._client.gamesPlayed([]);
 };
 
@@ -187,3 +187,4 @@ require("./handlers/lobbies");
 require("./handlers/parties");
 require("./handlers/leagues");
 require("./handlers/sourcetv");
+require("./handlers/history");

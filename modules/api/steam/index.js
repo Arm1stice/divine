@@ -11,8 +11,11 @@ var request = require('request');
 // Used to get information about the user's profile
 module.exports.getPersonalProfileInfo = function(callback){
   request('https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + global.psettings.devkey + '&steamids=' + global.username, function(error, response, body){
-    if(error && response.statusCode === 403){
-      callback(error, null);
+    if(response.statusCode == 503){
+      return callback("Steam WebAPI unavailable");
+    }
+    if(error){
+      return callback(error, null);
     }else{
         if(body === "<html><head><title>Forbidden</title></head><body><h1>Forbidden</h1>Access is denied. Retrying will not help. Please verify your <pre>key=</pre> parameter.</body></html>"){
           callback("The DevKey you provided is not valid, please edit the key through Edit>Edit devkey!", null);
