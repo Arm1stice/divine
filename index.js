@@ -15,6 +15,9 @@
   0, 1, 2, 3, 4
   DIRE PLAYER SLOTS:
   128, 129, 130, 131, 132
+
+	ACCOUNT ID FOR PLAYERS WHO DON'T REVEAL MATCH DETAILS:
+	4294967295
 */
 process.on('error', function(err) {
 	console.log(err);
@@ -91,6 +94,7 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
+	util.log("ROOT DIRECTORY: " + global.root);
 	var atomScreen = require('screen');
 	size = atomScreen.getPrimaryDisplay().workAreaSize;
 	var menuTemplate = [{
@@ -186,12 +190,12 @@ global.ipc.on('showExplanationWindow', function() {
 // Received negative confirmation that we want to encrypt PSettings with password.
 global.ipc.on('dontEncryptFile', function() {
 	global.settings = baseSettings;
-	fs.writeFile("settings/" + global.username + "/settings.json", JSON.stringify(global.settings), function(err) {
+	fs.writeFile(global.root + "/settings/" + global.username + "/settings.json", JSON.stringify(global.settings), function(err) {
 		if (err) {
 			throw err;
 		} else {
 			global.psettings = basePSettings;
-			fs.writeFile("settings/" + global.username + "/psettings", JSON.stringify(global.psettings), function(err) {
+			fs.writeFile(global.root + "/settings/" + global.username + "/psettings", JSON.stringify(global.psettings), function(err) {
 				if (err) throw err;
 				global.isOpeningAnotherWindow = true;
 				global.encryptionWindow.close();
@@ -205,14 +209,14 @@ global.ipc.on('dontEncryptFile', function() {
 global.ipc.on('encryptFileWithPass', function(event, pass) {
 	global.settings = baseSettings;
 	global.settings.isEncrypted = true;
-	fs.writeFile("settings/" + global.username + "/settings.json", JSON.stringify(global.settings), function(err) {
+	fs.writeFile(global.root + "/settings/" + global.username + "/settings.json", JSON.stringify(global.settings), function(err) {
 		if (err) {
 			throw err;
 		} else {
 			global.crypt = encryptor(pass);
 			global.psettings = basePSettings;
 			global.crypt.encrypt(global.psettings, function(result) {
-				fs.writeFile("settings/" + global.username + "/psettings", result, function(err) {
+				fs.writeFile(global.root + "/settings/" + global.username + "/psettings", result, function(err) {
 					if (err) throw err;
 					global.isOpeningAnotherWindow = true;
 					global.encryptionWindow.close();
@@ -226,7 +230,7 @@ global.ipc.on('encryptFileWithPass', function(event, pass) {
 // Received password from PSettings decryption page.
 global.ipc.on('decryptPassword', function(event, pass) {
 	global.crypt = encryptor(pass);
-	fs.readFile("settings/" + global.username + "/psettings", 'utf8', function(err, file) {
+	fs.readFile(global.root + "/settings/" + global.username + "/psettings", 'utf8', function(err, file) {
 		if (err) throw err;
 		global.crypt.decrypt(file, function(err, result) {
 			if (err) {
@@ -253,9 +257,9 @@ global.ipc.on('loginSuccessResponseOk', function() {
 		global.loginWindow = null;
 	});
 	global.loginWindow.close();
-	isthere("settings/" + global.username + "/settings.json", function(exists) {
+	isthere(global.root + "/settings/" + global.username + "/settings.json", function(exists) {
 		if (exists) {
-			fs.readFile("settings/" + global.username + "/settings.json", function(err, file) {
+			fs.readFile(global.root + "/settings/" + global.username + "/settings.json", function(err, file) {
 				if (err) {
 					console.err("Error reading " + global.username + "'s settings!");
 					throw err;
@@ -272,7 +276,7 @@ global.ipc.on('loginSuccessResponseOk', function() {
 						});
 						global.encryptionWindow.loadUrl("file://" + __dirname + "/views/decryptFile.html");
 					} else {
-						fs.readFile("settings/" + global.username + "/psettings", function(err, file) {
+						fs.readFile(global.root + "/settings/" + global.username + "/psettings", function(err, file) {
 							if (err) {
 								console.error("Error reading personal settings file!");
 								throw err;
@@ -284,15 +288,15 @@ global.ipc.on('loginSuccessResponseOk', function() {
 					}
 				}
 			});
-			matchdb = new sqlite.Database("settings/" + global.username + "/database.sqlite");
+			matchdb = new sqlite.Database(global.root + "/settings/" + global.username + "/database.sqlite");
 			database = require('./modules/database/index.js')(matchdb);
 			mAnalyzer = require("./modules/matches/index.js")(matchdb);
 		} else {
-			fs.mkdir("settings/" + global.username + "/", function(err) {
+			fs.mkdir(global.root + "/settings/" + global.username + "/", function(err) {
 				if (err) {
-					console.error("Error making path");
+					return console.error("Error making path");
 				};
-				matchdb = new sqlite.Database("settings/" + global.username + "/database.sqlite");
+				matchdb = new sqlite.Database(global.root + "/settings/" + global.username + "/database.sqlite");
 				matchdb.serialize(function() {
 					matchdb.run("CREATE TABLE matches (matchid INTEGER, info TEXT, heroid INTEGER, heroname TEXT, isranked INTEGER, modeid INTEGER, modename TEXT, win INTEGER, playerinfo TEXT, mmrchange INTEGER, previousmmr INTEGER, solochange INTEGER, leaverstatus INTEGER, abandon INTEGER);");
 					matchdb.run("CREATE TABLE mmr (date INTEGER, mmr INTEGER);")
@@ -441,7 +445,9 @@ function continueOn2() {
 													return cb(null);
 												}, function(err) {
 													if (matchesLoaded.length < 25) {
-														var amt = (25 - matchesLoaded.length);
+														var amt = (matchesLoaded.length === 0) ? 25 : (25 - matchesLoaded.length);
+														var newamt = amt;
+														global.mainWindow.webContents.executeJavaScript(("$('#sinfotext').text('Getting ~" + amt + " matches...')"));
 														var matchesObserved = [];
 														//if (amt > 10) amt = 10;
 														console.log("WE ARE GOING TO REQUEST " + amt + " matches");
@@ -457,11 +463,25 @@ function continueOn2() {
 															util.log("We are going to start at id " + startAtMatchId);
 															mAnalyzer.obtainMatchesAndAdd(1, startAtMatchId, function(err, obtainedMatches) {
 																if (err) {
-																	console.error("WELP, we couldn't get the matches! (" + err + ")");
-																	global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
-																	global.mainWindow.webContents.executeJavaScript(("$('#statusdanger').show()"));
-																	global.mainWindow.webContents.executeJavaScript(("$('#sdangertext').html('" + escape(err) + "')"));
-																	return next(err, null);
+																	if(err === "notPublic"){
+																		dialog.showMessageBox(global.mainWindow, {
+																			type: 'warning',
+																			buttons: ["OK"],
+																			title: 'Oops!',
+																			message: "It looks like your Dota 2 settings are set to not make your match data public! Divine requires your match data to be public because it gets its data from the WebAPI. You can change this setting through your Dota 2 settings ingame. Divine will now exit."
+																		}, function(response) {
+																			global.mainWindow.close();
+																		});
+																		global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
+																		global.mainWindow.webContents.executeJavaScript(("$('#statussuccess').show()"));
+																		global.mainWindow.webContents.executeJavaScript(("$('#ssuccesstext').html('Done!')"));
+																	}else{
+																		console.error("WELP, we couldn't get the matches! (" + err + ")");
+																		global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
+																		global.mainWindow.webContents.executeJavaScript(("$('#statusdanger').show()"));
+																		global.mainWindow.webContents.executeJavaScript(("$('#sdangertext').html('" + escape(err) + "')"));
+																		return next(err, null);
+																	}
 																} else if (obtainedMatches.length === 0) {
 																		console.error("WELP, we couldn't get the matches!");
 																		global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
@@ -469,6 +489,7 @@ function continueOn2() {
 																		global.mainWindow.webContents.executeJavaScript(("$('#sdangertext').html('No matches received')"));
 																		return next("No matches received", null);
 																} else {
+																	global.mainWindow.webContents.executeJavaScript(("$('#sinfotext').text('Getting ~" + --newamt + " matches...')"));
 																	listIndex += obtainedMatches.length;
 																	matchesObserved.push(obtainedMatches[0].matchid);
 																	async.forEachOfSeries(obtainedMatches, function(value, num2, cb2) {
@@ -490,15 +511,16 @@ function continueOn2() {
 																	});
 																}
 															});
-														}, function(err, matchesReceived){
+														}, function(err){
+															// Either we added all the matches, there was an error adding one of the matches for some reason, or we didn't receive any matches because there are none left to analyze.
 															if(err){
-																util.log("We received an error why getting the matches");
+																util.log("We received an error while getting the matches (" + err + ")");
 															}else{
 																util.log("We didn't receive an error");
-																global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
-																global.mainWindow.webContents.executeJavaScript(("$('#statussuccess').show()"));
-																global.mainWindow.webContents.executeJavaScript(("$('#ssuccesstext').html('Done!')"));
 															}
+															global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));
+															global.mainWindow.webContents.executeJavaScript(("$('#statussuccess').show()"));
+															global.mainWindow.webContents.executeJavaScript(("$('#ssuccesstext').html('Done!')"));
 														});
 													} else {
 														global.mainWindow.webContents.executeJavaScript(("$('#statusinfo').hide()"));

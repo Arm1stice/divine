@@ -56,8 +56,8 @@ handlers[Dota2.EDOTAGCMsg.k_EMsgDOTAGetPlayerMatchHistoryResponse] = function on
   this.emit("matchHistoryResponse", response);
   if (callback) callback(response);
   if(response.matches){
-    util.log("Received matches from GC!");
+    //util.log("Received matches from GC!");
   }else{
-    util.log("Received no matches from GC");
+    //util.log("Received no matches from GC");
   }
 };

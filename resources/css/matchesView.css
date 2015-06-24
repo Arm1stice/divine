@@ -49,6 +49,7 @@ body, html{
   left: 0;
   display: inline-block;
   position: absolute;
+  -webkit-user-select: none;
 }
 
 /* Match info */
@@ -97,7 +98,7 @@ body, html{
 }
 
 #list li{
-  width: 250px;
+  width: 245px;
   cursor: pointer;
 }
 #list ul.matchlist li{

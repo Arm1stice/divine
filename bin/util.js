@@ -11,7 +11,7 @@ module.exports = function(){
     global.psettings[setting] = update;
     if(global.settings.isEncrypted === true){
       global.crypt.encrypt(global.psettings, function(result){
-        fs.writeFile("settings/" + global.username + "/psettings", result, function(err){
+        fs.writeFile(global.root + "/settings/" + global.username + "/psettings", result, function(err){
           if(err){
             callback(err);
           }else{
@@ -20,7 +20,7 @@ module.exports = function(){
         });
       });
     }else{
-      fs.writeFile("settings/" + global.username + "/psettings", JSON.stringify(global.psettings), function(err){
+      fs.writeFile(global.root + "/settings/" + global.username + "/psettings", JSON.stringify(global.psettings), function(err){
         if(err){
           callback(err);
         }else{

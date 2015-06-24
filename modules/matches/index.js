@@ -248,6 +248,10 @@ module.exports = function(db) {
 												return cb3();
 											}
 										}, function(err){
+											if(matchdata.playerinfo == undefined){
+												util.log("It looks like this person's profile isn't public! Better tell them to fix that up.");
+												return cb2("notPublic");
+											}
 											util.log("Added player specific info for match with id " + value.matchId + ". Now to callback and check if the match is ranked...");
 											if(matchdata.isranked === 1){
 												readied2 = false;
@@ -315,7 +319,7 @@ module.exports = function(db) {
 						}, function(err){
 							if(err){
 								util.log("Error received whilst attempting to obtain matches. Stopping operations...");
-								return callback(null, matchesObtained);
+								return callback(err, matchesObtained);
 							}else{
 								util.log("Successfully fetched " + matchesObtained.length + " matches and added them to the database");
 								return callback(null, matchesObtained);
