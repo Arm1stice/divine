@@ -19,7 +19,7 @@ SteamEvents.prototype.registerEvents = function(){
     });
   });
   global.steamcli.on('sentry', function(hash){
-    fs.writeFile(__dirname + '/../info/sentry', hash, function(err){
+    fs.writeFile(global.root + '/../info/sentry', hash, function(err){
       if(err){
         return console.error("Error writing sentry hash!");
       }

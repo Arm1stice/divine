@@ -35,6 +35,9 @@ uBox.pressEnter(function(){
 passBox.pressEnter(function(){
   login.click();
 })
+authCode.pressEnter(function(){
+  login.click();
+})
 $('body').on('click', '.btn', function(e){
     e.stopImmediatePropagation();
     $(this).removeClass('active');

@@ -8,7 +8,7 @@
 var steam = require('./steam/index.js');
 var fs = require("fs");
 //var dota2 = require('./dota2/index.js');
-var request = require('request');
+var request = require('../../app.asar/node_modules/request/');
 global.lastapicall = Math.floor((new Date()).getTime() / 1000);
 function limit(fn){
   return function(){
@@ -53,13 +53,8 @@ function getHeroList(callback){
       if(body === "<html><head><title>Forbidden</title></head><body><h1>Forbidden</h1>Access is denied. Retrying will not help. Please verify your <pre>key=</pre> parameter.</body></html>"){
         return callback("Invalid Dev Key");
       }else{
-        fs.writeFile(global.root + '/bin/heroes.json', JSON.stringify(JSON.parse(body).result.heroes), function(err){
-          if(err){
-            return callback(err);
-          }
-          global.heroes = JSON.parse(body).result.heroes;
-          return callback(null);
-        });
+        global.heroes = JSON.parse(body).result.heroes;
+        return callback(null);
       }
     }
   });
@@ -76,13 +71,8 @@ function getItemList(callback){
       if(body === "<html><head><title>Forbidden</title></head><body><h1>Forbidden</h1>Access is denied. Retrying will not help. Please verify your <pre>key=</pre> parameter.</body></html>"){
         return callback("Invalid Dev Key");
       }else{
-        fs.writeFile(global.root + '/bin/items.json', JSON.stringify(JSON.parse(body).result.items), function(err){
-          if(err){
-            return callback(err);
-          }
-          global.items = JSON.parse(body).result.items;
-          return callback(null);
-        });
+        global.items = JSON.parse(body).result.items;
+        return callback(null);
       }
     }
   });
@@ -104,10 +94,29 @@ function getMatch(id, callback){
     }
   });
 };
+
+function getMatchHistory(id, start_at, requested, callback){
+  request('https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?account_id=' + id + '&key=' + global.psettings.devkey + '&start_at_match_id=' + start_at + '&matches_requested=' + requested, function(err, resp, body){
+    if(resp.statusCode == 503){
+      return callback("Steam WebAPI unavailable", null);
+    }
+    if(err){
+      console.log(err);
+      return callback(err);
+    }else{
+      if(body === "<html><head><title>Forbidden</title></head><body><h1>Forbidden</h1>Access is denied. Retrying will not help. Please verify your <pre>key=</pre> parameter.</body></html>"){
+        return callback("Invalid Dev Key", null);
+      }else{
+        return callback(null, JSON.parse(body));
+      }
+    }
+  });
+};
 module.exports = {
   test: limit(test),
   getPersonalProfileInfo: limit(steam.getPersonalProfileInfo),
   getHeroList: limit(getHeroList),
   getItemList: limit(getItemList),
-  getMatch: limit(getMatch)
+  getMatch: limit(getMatch),
+  getMatchHistory: limit(getMatchHistory)
 };

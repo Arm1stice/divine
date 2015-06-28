@@ -14,7 +14,7 @@ var steamerino = function(steamcli){
 
 steamerino.prototype.login = function(e, a){
   //var hash = (information.havehash === true) ? fs.readFileSync("../info/sentry") : null;
-  fs.readFile(__dirname + '/../info/sentry', function(err, value){
+  fs.readFile(global.root + '/../info/sentry', function(err, value){
     if(err){
      global.steamcli.logOn({
        accountName: a.username,
@@ -35,11 +35,11 @@ steamerino.prototype.login = function(e, a){
   if(a.remember === true){
     global.info.remember = true;
     global.info.username = a.username;
-    fs.writeFileSync(__dirname + '/../info/information.json', JSON.stringify(global.info));
+    fs.writeFileSync(global.root + '/../info/information.json', JSON.stringify(global.info));
   }else{
     global.info.remember = false;
     global.info.username = "";
-    fs.writeFileSync(__dirname + '/../info/information.json', JSON.stringify(global.info));
+    fs.writeFileSync(global.root + '/../info/information.json', JSON.stringify(global.info));
   }
 };
 

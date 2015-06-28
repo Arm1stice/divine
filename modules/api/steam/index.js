@@ -6,7 +6,7 @@
 */
 
 var https = require('https');
-var request = require('request');
+var request = require('../../../app.asar/node_modules/request/');
 
 // Used to get information about the user's profile
 module.exports.getPersonalProfileInfo = function(callback){
